@@ -59,7 +59,14 @@ class Net(nn.Module):
 		self.subject_lstm_num_direction = 2 if subject_lstm_bidirectional else 1
 		self.subject_hidden_dim = subject_hidden_dim
 
-		self.subject_lstm = nn.LSTM(
+		# self.subject_lstm = nn.LSTM(
+		# 	input_size = self.embed_dim,
+		# 	hidden_size = self.subject_hidden_dim,
+		# 	num_layers = self.subject_lstm_nlayers,
+		# 	batch_first = True,
+		# 	bidirectional = subject_lstm_bidirectional
+		# )
+		self.subject_lstm = nn.GRU(
 			input_size = self.embed_dim,
 			hidden_size = self.subject_hidden_dim,
 			num_layers = self.subject_lstm_nlayers,
@@ -74,7 +81,7 @@ class Net(nn.Module):
 		self.speaker_pos_lstm_num_direction = 2 if speaker_pos_lstm_bidirectional else 1
 		self.speaker_pos_hidden_dim = speaker_pos_hidden_dim
 
-		self.speaker_pos_lstm = nn.LSTM(
+		self.speaker_pos_lstm = nn.GRU(
 			input_size = self.embed_dim,
 			hidden_size = self.speaker_pos_hidden_dim,
 			num_layers = self.speaker_pos_lstm_nlayers,
@@ -91,7 +98,7 @@ class Net(nn.Module):
 		self.context_lstm_num_direction = 2 if context_lstm_bidirectional else 1
 		self.context_hidden_dim = context_hidden_dim
 
-		self.context_lstm = nn.LSTM(
+		self.context_lstm = nn.GRU(
 			input_size = self.embed_dim,
 			hidden_size = self.context_hidden_dim,
 			num_layers = self.context_lstm_nlayers,
@@ -104,7 +111,7 @@ class Net(nn.Module):
 		self.justification_lstm_num_direction = 2 if justification_lstm_bidirectional else 1
 		self.justification_hidden_dim = justification_hidden_dim
 
-		self.justification_lstm = nn.LSTM(
+		self.justification_lstm = nn.GRU(
 			input_size = self.embed_dim,
 			hidden_size = self.justification_hidden_dim,
 			num_layers = self.justification_lstm_nlayers,

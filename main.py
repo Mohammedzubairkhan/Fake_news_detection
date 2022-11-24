@@ -171,10 +171,12 @@ hyper = {
 # dataset_name = 'LIAR-PLUS'
 dataset_name = 'LIAR'
 
-# mode = 'train'
-mode = 'test'
+mode = 'train'
+# mode = 'test'
 # pathModel = None
-pathModel = 'm-fake-net-num_classes-2-test_acc-0.633.pth.tar'
+# pathModel = 'm-fake-net-num_classes-2-test_acc-0.633.pth.tar'
+# pathModel = 'm-fake-net-num_classes-6-22112022-005347-epoch-9-val_acc-0.240.pth.tar'
+pathModel = 'm-fake-net-num_classes-6-22112022-163742-epoch-9-val_acc-0.231.pth.tar'
 # pathModel = 'm-fake-net-num_classes-6-test_acc-0.249.pth.tar'
 
 if mode == 'test':

@@ -58,7 +58,7 @@ class BaselineNet(nn.Module):
 		self.subject_lstm_num_direction = 2 if subject_lstm_bidirectional else 1
 		self.subject_hidden_dim = subject_hidden_dim
 
-		self.subject_lstm = nn.LSTM(
+		self.subject_lstm = nn.GRU(
 			input_size = self.embed_dim,
 			hidden_size = self.subject_hidden_dim,
 			num_layers = self.subject_lstm_nlayers,
@@ -67,13 +67,19 @@ class BaselineNet(nn.Module):
 		)
 
 		# Speaker
-		
+		self.speaker_lstm = nn.GRU(
+			input_size = self.embed_dim,
+			hidden_size = self.subject_hidden_dim,
+			num_layers = self.subject_lstm_nlayers,
+			batch_first = True,
+			bidirectional = subject_lstm_bidirectional
+		)
 		# Speaker Position
 		self.speaker_pos_lstm_nlayers = speaker_pos_lstm_nlayers
 		self.speaker_pos_lstm_num_direction = 2 if speaker_pos_lstm_bidirectional else 1
 		self.speaker_pos_hidden_dim = speaker_pos_hidden_dim
 
-		self.speaker_pos_lstm = nn.LSTM(
+		self.speaker_pos_lstm = nn.GRU(
 			input_size = self.embed_dim,
 			hidden_size = self.speaker_pos_hidden_dim,
 			num_layers = self.speaker_pos_lstm_nlayers,
@@ -82,15 +88,27 @@ class BaselineNet(nn.Module):
 		)
 
 		# State
-		
+		self.state_lstm = nn.GRU(
+			input_size = self.embed_dim,
+			hidden_size = self.subject_hidden_dim,
+			num_layers = self.subject_lstm_nlayers,
+			batch_first = True,
+			bidirectional = subject_lstm_bidirectional
+		)		
 		# Party
-		
+		self.party_lstm = nn.GRU(
+			input_size = self.embed_dim,
+			hidden_size = self.subject_hidden_dim,
+			num_layers = self.subject_lstm_nlayers,
+			batch_first = True,
+			bidirectional = subject_lstm_bidirectional
+		)		
 		# Context
 		self.context_lstm_nlayers = context_lstm_nlayers
 		self.context_lstm_num_direction = 2 if context_lstm_bidirectional else 1
 		self.context_hidden_dim = context_hidden_dim
 
-		self.context_lstm = nn.LSTM(
+		self.context_lstm = nn.GRU(
 			input_size = self.embed_dim,
 			hidden_size = self.context_hidden_dim,
 			num_layers = self.context_lstm_nlayers,
@@ -103,7 +121,7 @@ class BaselineNet(nn.Module):
 		self.justification_lstm_num_direction = 2 if justification_lstm_bidirectional else 1
 		self.justification_hidden_dim = justification_hidden_dim
 
-		self.justification_lstm = nn.LSTM(
+		self.justification_lstm = nn.GRU(
 			input_size = self.embed_dim,
 			hidden_size = self.justification_hidden_dim,
 			num_layers = self.justification_lstm_nlayers,
@@ -125,9 +143,9 @@ class BaselineNet(nn.Module):
 		self.fc_att = nn.Linear(self.embed_dim, self.embed_dim)
 		self.fc_conv = nn.Linear(self.embed_dim, self.embed_dim)
 		self.fc_cat = nn.Linear(self.embed_dim, self.embed_dim)
-		self.fc = nn.Linear(len(self.statement_kernel_size) * self.statement_kernel_num + self.query_dim,
-							self.num_classes)
-
+		# self.fc = nn.Linear(len(self.statement_kernel_size) * self.statement_kernel_num + self.query_dim,
+		# 					self.num_classes)
+		self.fc = nn.Linear(1 * 220, self.num_classes)
 	def forward(self, sample):
 
 		
@@ -146,31 +164,34 @@ class BaselineNet(nn.Module):
 
 		# Subject
 		subject_ = self.embedding(subject) # 1*W*D
-		_, (subject_, _) = self.subject_lstm(subject_) # (layer x dir) * batch * hidden
+		_, subject_ = self.subject_lstm(subject_) # (layer x dir) * batch * hidden
 		subject_ = F.max_pool1d(subject_, self.subject_hidden_dim).view(1, -1) # (layer x dir) * batch * 1 -> 1*(layer x dir)
 
 		# Speaker
-		speaker_ = self.embedding(speaker).squeeze(0) # 1*1*D -> 1*D
-
+		speaker_ = self.embedding(speaker)# 1*1*D -> 1*D
+		_,speaker_= self.speaker_lstm(speaker_) # (layer x dir) * batch * hidden
+		speaker_ = F.max_pool1d(speaker_, self.subject_hidden_dim).view(1, -1) # (layer x dir) * batch * 1 -> 1*(layer x dir)
 		# Speaker Position
 		speaker_pos_ = self.embedding(speaker_pos)
-		_, (speaker_pos_, _) = self.speaker_pos_lstm(speaker_pos_)
+		_,speaker_pos_ = self.speaker_pos_lstm(speaker_pos_)
 		speaker_pos_ = F.max_pool1d(speaker_pos_, self.speaker_pos_hidden_dim).view(1, -1)
 
 		# State
-		state_ = self.embedding(state).squeeze(0)
-
+		state_ = self.embedding(state)
+		_, state_= self.state_lstm(state_) # (layer x dir) * batch * hidden
+		state_ = F.max_pool1d(state_, self.subject_hidden_dim).view(1, -1) # (layer x dir) * batch * 1 -> 1*(layer x dir)
 		# Party
-		party_ = self.embedding(party).squeeze(0)
-
+		party_ = self.embedding(party)
+		_,party_= self.party_lstm(party_) # (layer x dir) * batch * hidden
+		party_ = F.max_pool1d(party_, self.subject_hidden_dim).view(1, -1) # (layer x dir) * batch * 1 -> 1*(layer x dir)
 		# Context
 		context_ = self.embedding(context)
-		_, (context_, _) = self.context_lstm(context_)
+		_,context_ = self.context_lstm(context_)
 		context_ = F.max_pool1d(context_, self.context_hidden_dim).view(1, -1)
 
 		# Justification
 		justification_ = self.embedding(justification)
-		_, (justification_, _) = self.justification_lstm(justification_)
+		_,justification_ = self.justification_lstm(justification_)
 		justification_ = F.max_pool1d(justification_, self.justification_hidden_dim).view(1, -1)
 		
 		# Statement
@@ -183,6 +204,7 @@ class BaselineNet(nn.Module):
 		# Concatenate
 		features = torch.cat((statement_, subject_, speaker_, speaker_pos_, state_, party_, context_, justification_), 1)
 		features = self.dropout_features(features)
+		# print(len(features))
 		out = self.fc(features)
 		out = F.log_softmax(out, dim=-1)
 

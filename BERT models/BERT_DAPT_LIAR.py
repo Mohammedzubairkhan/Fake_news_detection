@@ -362,8 +362,8 @@ y_train = labels_onehot['train']
 X_val = statements['val']
 y_val = labels_onehot['val']
 
-X_train = X_train + X_val
-y_train = y_train + y_val
+X_train = X_train# + X_val
+y_train = y_train #+ y_val
 
 
 X_test = statements['test']
@@ -382,7 +382,7 @@ y_test = labels_onehot['test']
 # Loading the meta data
 X_train_meta = metadata['train']
 X_val_meta = metadata['val']
-X_train_meta = X_train_meta + X_val_meta
+X_train_meta = X_train_meta # + X_val_meta
 X_test_meta = metadata['test']
 
 # Loading Credit scores
@@ -466,18 +466,18 @@ train_lists = [X_train, X_train_meta, X_train_credit, y_train]
 
 # Test Statements and Justifications
 test_lists = [X_test, X_test_meta, X_test_credit, y_test]
-
+val_lists = [X_val, X_val_meta, X_val_credit, y_val]
 # Preparing the data (Tokenize)
 training_dataset = text_dataset(x_y_list = train_lists)
 test_dataset = text_dataset(x_y_list = test_lists)
-
+val_dataset = text_dataset(x_y_list = val_lists)
 
 # Prepare the training dictionaries
 dataloaders_dict = {'train': torch.utils.data.DataLoader(training_dataset, batch_size=batch_size, shuffle=True, num_workers=0),
-                   'val':torch.utils.data.DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
+                   'val':torch.utils.data.DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
                    }
 dataset_sizes = {'train':len(train_lists[0]),
-                'val':len(test_lists[0])}
+                'val':len(val_lists[0])}
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 print(device)
@@ -626,26 +626,26 @@ model_ft1, train_acc, val_acc, train_loss, val_loss = train_model(model, criteri
 
 # Accuracy plots
 
-print(val_acc)
-print(val_loss)
-#plt.plot(train_acc)
-plt.plot(val_acc)
-plt.title('Model accuracy')
-plt.ylabel('accuracy')
-plt.xlabel('epoch')
-plt.legend(['val'], loc='upper left')
-#plt.show()
-plt.savefig('accuracy.png')
-plt.close()
-print('Saved Accuracy plot')
-# Loss plots
-#plt.plot(train_loss)
-plt.plot(val_loss)
-plt.title('Model loss')
-plt.ylabel('loss')
-plt.xlabel('epoch')
-plt.legend(['val'], loc='upper right')
-#plt.show()
-plt.savefig('loss.png')
-plt.close()
-print('Saved Loss plot')
+# print(val_acc)
+# print(val_loss)
+# #plt.plot(train_acc)
+# plt.plot(val_acc)
+# plt.title('Model accuracy')
+# plt.ylabel('accuracy')
+# plt.xlabel('epoch')
+# plt.legend(['val'], loc='upper left')
+# #plt.show()
+# plt.savefig('accuracy.png')
+# plt.close()
+# print('Saved Accuracy plot')
+# # Loss plots
+# #plt.plot(train_loss)
+# plt.plot(val_loss)
+# plt.title('Model loss')
+# plt.ylabel('loss')
+# plt.xlabel('epoch')
+# plt.legend(['val'], loc='upper right')
+# #plt.show()
+# plt.savefig('loss.png')
+# plt.close()
+# print('Saved Loss plot')

@@ -8,7 +8,7 @@ import random
 import numpy as np
 from model import Net
 from data import dataset_to_variable
-
+accu =[]
 def train(train_samples,
           valid_samples,
           lr,
@@ -78,7 +78,7 @@ def train(train_samples,
         
 
 
-    return model, val_acc
+    return model, val_acc, accu
 
 
 
@@ -98,6 +98,7 @@ def valid(valid_samples, model):
         if prediction == sample.label:
             acc += 1
     acc /= len(valid_samples)
+    accu.append(acc)
     print('  Validation Accuracy: {:.3f}'.format(acc))
 
     return acc

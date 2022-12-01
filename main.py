@@ -6,6 +6,7 @@ from data import train_data_prepare
 from train import train
 from test import test, test_data_prepare
 from model import Net
+from model import Net1
 from model_baseline import BaselineNet
 import os
 os.environ["CUDA_VISIBLE_DEVICES"]="2"
@@ -25,7 +26,8 @@ def loadModel(word2num, num_classes, hyper):
     
     # Construct model instance
     print('  Constructing network model...')
-    model = BaselineNet(
+    # model = BaselineNet(
+    model = Net(
                 len(all_word2num),
                 num_classes,
                 embed_dim = hyper['embed_dim'],
@@ -97,8 +99,8 @@ def driver(train_file, valid_file, test_file, output_file, dataset, mode, pathMo
         model = loadModel(word2num, num_classes, hyper)
         
         #---train and validate
-        model, val_acc = train(train_samples, valid_samples, lr, epoch, model, num_classes, use_cuda, word2num, hyper, nnArchitecture, timestampLaunch)
-
+        model, val_acc, array_accu = train(train_samples, valid_samples, lr, epoch, model, num_classes, use_cuda, word2num, hyper, nnArchitecture, timestampLaunch)
+        print(array_accu)
         #---save model and embeddings
         pathModel = None
 
@@ -141,8 +143,8 @@ def driver(train_file, valid_file, test_file, output_file, dataset, mode, pathMo
 #---HYPERPARAMETERS
 
 hyper = {
-'num_classes': 6,
-'epoch': 10,
+'num_classes': 2,
+'epoch': 20,
 'lr': 0.001,
 'embed_dim': 100,
 'statement_kernel_num': 64,
@@ -171,12 +173,15 @@ hyper = {
 # dataset_name = 'LIAR-PLUS'
 dataset_name = 'LIAR'
 
-mode = 'train'
-# mode = 'test'
+# mode = 'train'
+mode = 'test'
 # pathModel = None
 # pathModel = 'm-fake-net-num_classes-2-test_acc-0.633.pth.tar'
 # pathModel = 'm-fake-net-num_classes-6-22112022-005347-epoch-9-val_acc-0.240.pth.tar'
-pathModel = 'm-fake-net-num_classes-6-22112022-163742-epoch-9-val_acc-0.231.pth.tar'
+pathModel = 'm-fake-net-num_classes-2-28112022-140151-epoch-19-val_acc-0.593.pth.tar'
+# pathModel = 'm-fake-net-num_classes-6-22112022-163742-epoch-9-val_acc-0.231.pth.tar'
+# pathModel='m-fake-net-num_classes-6-22112022-215927-epoch-9-val_acc-0.234.pth.tar'
+# pathModel ='m-fake-net-num_classes-2-27112022-123550-epoch-9-val_acc-0.586.pth.tar'
 # pathModel = 'm-fake-net-num_classes-6-test_acc-0.249.pth.tar'
 
 if mode == 'test':

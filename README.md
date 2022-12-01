@@ -14,14 +14,14 @@ To run BERT model, run BERT_DAPT_LIAR.py for training and test.py for testing. F
 
 ## Results
 
-       Model	                Accuracy metric
- 	                            Binary	6 class 
-Baseline for CNN with 
-attention & BiLSTM              0.63    0.24
-Baseline with BERT	            0.75	0.32
-CNN with attention & GRU	    0.61	0.25
-BERT with domain adaptive 
-pre-fine tuning	                0.75	 0.34
+| Model         | Accuracy      | metric|
+| ------------- |:-------------:|:-----:|
+| Baseline for CNN with attention & BiLSTM  | 0.63    | 0.24 |
+| Baseline with BERT| 0.75      |   0.32 |
+|CNN with attention & GRU | 0.61	| 0.25 |
+| BERT with domain adaptive  pre-fine tuning | 0.75 | 0.34 |
+
+
 
 
 

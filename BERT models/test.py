@@ -1,6 +1,6 @@
 from sklearn import metrics
 import torch
-from siamese_bert_nojust import BertForSequenceClassification,text_dataset,DataLoader
+from BERT_DAPT_LIAR import BertForSequenceClassification,text_dataset,DataLoader
 import pandas as pd
 import sys
 import numpy as np
@@ -21,10 +21,10 @@ def get_metrics(y_true, y_pred):
     return accuracy, precision, recall, f1
 
 model = BertForSequenceClassification(num_labels=2)
-model.load_state_dict(torch.load('checkpoints/bert_model_test_roberta_binary.pth'))
+model.load_state_dict(torch.load('bert_model_test_roberta_binary.pth'))
 model.eval()
 
-test_df = pd.read_csv('test.tsv', sep="\t", header=None)
+test_df = pd.read_csv('../test.tsv', sep="\t", header=None)
 test_df = test_df.fillna(0)
 test = test_df.values
 

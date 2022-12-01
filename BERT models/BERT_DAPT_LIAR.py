@@ -40,9 +40,9 @@ num_labels = 2
 
 #home = str(Path.home())
 
-train_path = 'train.tsv'
-test_path = 'test.tsv'
-val_path ='valid.tsv'
+train_path = '../train.tsv'
+test_path = '../test.tsv'
+val_path ='../valid.tsv'
 
 
 train_df = pd.read_csv(train_path, sep="\t", header=None)
